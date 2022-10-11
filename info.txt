@@ -1,0 +1,11 @@
+Maze Generation Project by Thierry Champion
+Based on the similar project of Jamis Buck
+source: http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap
+
+This project implements 10 different algorithms to generate 'perfect' mazes.
+A perfect maze is a maze where you can place a beginning point and an end point and there
+will only be one path such that it is the minimum number of steps to get to there. Some of these algorithms also generate a
+'minimal spanning tree', which means that if you where to represent the maze as a graph of edges and nodes,
+there would be no cycles and there will always be the minimum number of edges to join them.
+Others generate 'uniform spanning trees', which means that the graph version of that maze is perfectly random
+and doesn't favor a specific behaviour, like short paths or long ones.
