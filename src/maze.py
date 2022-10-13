@@ -27,8 +27,11 @@ class Maze:
                 grid.append(cell)
         return grid
 
-    def get_cell(self, x, y):
+    def get_cell_2d(self, x, y):
         return self.grid[y * self.width + x]
+
+    def get_cell_1d(self, pos):
+        return self.grid[pos]
 
     def init_render(self, win: pygame.display, dimension: float):
         white = pygame.color.Color((255, 255, 255))

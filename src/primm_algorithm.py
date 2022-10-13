@@ -29,7 +29,7 @@ class PrimmMaze(Maze):
             new_y = cell.row + self.dy[d]
             if new_x < 0 or new_x >= self.width or new_y < 0 or new_y >= self.width:
                 continue
-            new_cell = self.get_cell(new_x, new_y)
+            new_cell = self.get_cell_2d(new_x, new_y)
             if new_cell.visited:
                 continue
             cell.walls.remove(self.directions[d])
@@ -41,7 +41,7 @@ class PrimmMaze(Maze):
 
     async def generate(self, delay):
         V = []
-        random_cell = self.get_cell(random.randrange(0, self.width - 1), random.randrange(0, self.height - 1))
+        random_cell = self.get_cell_2d(random.randrange(0, self.width - 1), random.randrange(0, self.height - 1))
         random_cell.visited = True
         V.append(random_cell)
         while V:

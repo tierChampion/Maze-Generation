@@ -46,9 +46,9 @@ class PacManMaze(Maze):
         self.looping = False
 
     def modify_cell(self, x, y, direction):
-        cell = self.get_cell(x, y)
+        cell = self.get_cell_2d(x, y)
         mirror_x = self.width - x - 1
-        mirror_cell = self.get_cell(mirror_x, y)
+        mirror_cell = self.get_cell_2d(mirror_x, y)
         dir_id = self.directions.index(direction)
         cell.walls.remove(direction)
         mirror_cell.walls.remove(self.mirrored[dir_id])
@@ -62,7 +62,7 @@ class PacManMaze(Maze):
         x_max = self.half_width
         for y in range(y_min, y_max):
             for x in range(x_min, x_max):
-                cell = self.get_cell(x, y)
+                cell = self.get_cell_2d(x, y)
                 cell.visited = True
                 self.modify_cell(x, y, "E")
                 if x > x_min:
@@ -77,7 +77,7 @@ class PacManMaze(Maze):
         for x in range(self.half_width):
             run = []
             for y in range(self.height):
-                cell = self.get_cell(x, y)
+                cell = self.get_cell_2d(x, y)
                 if cell.visited:
                     continue
                 run.append(cell)
@@ -85,7 +85,7 @@ class PacManMaze(Maze):
                     continue
                 elif x == 0:
                     move = 1
-                elif y - 1 < 0 or self.get_cell(x, y - 1).visited:
+                elif y - 1 < 0 or self.get_cell_2d(x, y - 1).visited:
                     move = 0
                 else:
                     move = random.randint(0, 1)
@@ -102,7 +102,7 @@ class PacManMaze(Maze):
     async def loop(self, delay):
         for y in range(self.height):
             for x in range(self.half_width):
-                cell = self.get_cell(x, y)
+                cell = self.get_cell_2d(x, y)
                 if x == self.half_width - 1 and not cell.visited:
                     self.modify_cell(x, y, "E")
                 else:
@@ -111,7 +111,7 @@ class PacManMaze(Maze):
                         next_y = -1
                         i = 0
                         while next_x < 0 or next_y < 0 or next_y >= self.height or \
-                                self.get_cell(next_x, next_y).visited:
+                                self.get_cell_2d(next_x, next_y).visited:
                             direction = random.choice(cell.walls)
                             i = self.directions.index(direction)
                             next_x = x + self.dx[i]

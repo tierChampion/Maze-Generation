@@ -79,9 +79,9 @@ class KruskalMaze(Maze):
         random.shuffle(edges)
         while edges:
             selected_edge = edges.pop()
-            cell1 = self.get_cell(selected_edge[0], selected_edge[1])
+            cell1 = self.get_cell_2d(selected_edge[0], selected_edge[1])
             i = selected_edge[2]
-            cell2 = self.get_cell(cell1.col + self.dx[i], cell1.row + self.dy[i])
+            cell2 = self.get_cell_2d(cell1.col + self.dx[i], cell1.row + self.dy[i])
             if cell1.root == cell2.root:
                 continue
             tree = next(tree for tree in trees if tree.id == cell1.root)

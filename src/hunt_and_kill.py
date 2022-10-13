@@ -22,7 +22,7 @@ class HuntAndKillMaze(Maze):
         self.inverses = ["W", "E", "S", "N"]
 
     async def walk(self, x, y, delay):
-        current_cell = self.get_cell(x, y)
+        current_cell = self.get_cell_2d(x, y)
         current_cell.visited = True
         can_walk = True
         while can_walk:
@@ -34,9 +34,9 @@ class HuntAndKillMaze(Maze):
                 new_x = current_cell.col + self.dx[idx]
                 new_y = current_cell.row + self.dy[idx]
                 if self.width > new_x >= 0 and self.height > new_y >= 0:
-                    if not self.get_cell(new_x, new_y).visited:
+                    if not self.get_cell_2d(new_x, new_y).visited:
                         current_cell.walls.remove(direction)
-                        next_cell = self.get_cell(new_x, new_y)
+                        next_cell = self.get_cell_2d(new_x, new_y)
                         next_cell.walls.remove(self.inverses[idx])
                         self.modified.append(current_cell)
                         self.modified.append(next_cell)
@@ -49,7 +49,7 @@ class HuntAndKillMaze(Maze):
     async def hunt(self):
         for y in range(self.height):
             for x in range(self.width):
-                if not self.get_cell(x, y).visited:
+                if not self.get_cell_2d(x, y).visited:
                     return x, y
         return None, None
 
@@ -68,11 +68,11 @@ class HuntAndKillMaze(Maze):
                     new_x = current_x + self.dx[idx]
                     new_y = current_y + self.dy[idx]
                     if self.width > new_x >= 0 and self.height > new_y >= 0:
-                        if self.get_cell(new_x, new_y).visited:
-                            self.get_cell(current_x, current_y).walls.remove(direction)
-                            self.get_cell(new_x, new_y).walls.remove(self.inverses[idx])
-                            self.modified.add(self.get_cell(current_x, current_y))
-                            self.modified.add(self.get_cell(new_x, new_y))
+                        if self.get_cell_2d(new_x, new_y).visited:
+                            self.get_cell_2d(current_x, current_y).walls.remove(direction)
+                            self.get_cell_2d(new_x, new_y).walls.remove(self.inverses[idx])
+                            self.modified.add(self.get_cell_2d(current_x, current_y))
+                            self.modified.add(self.get_cell_2d(new_x, new_y))
                             found_neighbour = True
                     if found_neighbour:
                         break

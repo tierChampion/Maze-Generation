@@ -22,8 +22,8 @@ class RecursiveBackTrackerMaze(Maze):
 
     async def recursive_track(self, x, y, delay):
         await asyncio.sleep(delay)
-        if not self.get_cell(x, y).visited:
-            self.get_cell(x, y).visited = True
+        if not self.get_cell_2d(x, y).visited:
+            self.get_cell_2d(x, y).visited = True
         data = list(zip(self.directions, self.dx, self.dy, self.inverses))
         random.shuffle(data)
         self.directions, self.dx, self.dy, self.inverses = zip(*data)
@@ -31,12 +31,12 @@ class RecursiveBackTrackerMaze(Maze):
             new_x = x + self.dx[idx]
             new_y = y + self.dy[idx]
             if not (new_x < 0 or new_x > self.width - 1 or new_y < 0 or new_y > self.height - 1):
-                if not self.get_cell(new_x, new_y).visited:
-                    self.get_cell(new_x, new_y).visited = True
-                    self.get_cell(x, y).walls.remove(self.directions[idx])
-                    self.get_cell(new_x, new_y).walls.remove(self.inverses[idx])
-                    self.modified.add(self.get_cell(x, y))
-                    self.modified.add(self.get_cell(new_x, new_y))
+                if not self.get_cell_2d(new_x, new_y).visited:
+                    self.get_cell_2d(new_x, new_y).visited = True
+                    self.get_cell_2d(x, y).walls.remove(self.directions[idx])
+                    self.get_cell_2d(new_x, new_y).walls.remove(self.inverses[idx])
+                    self.modified.add(self.get_cell_2d(x, y))
+                    self.modified.add(self.get_cell_2d(new_x, new_y))
                     await self.recursive_track(new_x, new_y, delay)
 
     async def generate(self, delay):

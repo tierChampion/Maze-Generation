@@ -30,7 +30,7 @@ class SideWinderMaze(Maze):
             run = []
             for x in range(self.width):
                 row_pos = self.width - x - 1 if self.dir == "W" else x
-                cell = self.get_cell(row_pos, y)
+                cell = self.get_cell_2d(row_pos, y)
                 run.append(cell)
                 if y == 0 and (row_pos == self.width - 1 and self.dir == "E" or
                                row_pos == 0 and self.dir == "W"):
@@ -44,14 +44,14 @@ class SideWinderMaze(Maze):
                     move = random.randint(0, 1)
                 if move == 1:
                     cell.walls.remove(self.dir)
-                    side_cell = self.get_cell(row_pos + self.dx, y)
+                    side_cell = self.get_cell_2d(row_pos + self.dx, y)
                     side_cell.walls.remove(self.inv)
                     self.modified.add(cell)
                     self.modified.add(side_cell)
                 elif move == 0:
                     lower_cell = run[random.randint(0, len(run) - 1)]
                     lower_cell.walls.remove("N")
-                    top_cell = self.get_cell(lower_cell.col, lower_cell.row - 1)
+                    top_cell = self.get_cell_2d(lower_cell.col, lower_cell.row - 1)
                     top_cell.walls.remove("S")
                     self.modified.add(lower_cell)
                     self.modified.add(top_cell)

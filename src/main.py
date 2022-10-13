@@ -14,13 +14,13 @@ from src.recursive_backtrakcker import RecursiveBackTrackerMaze
 from src.recursive_division import RecursiveDivisionMaze
 from src.sidewinder import SideWinderMaze
 
-# ADD THE POSSIBILITIES TO CONSTRUCTORS OF BINARY TREE
+# parameter check for mazes initialisation (once that requires string especially)
 
 
 async def main(maze_type: int):
 
     screen_dim = 800
-    maze_dim = 90
+    maze_dim = 80
 
     window = pygame.display.set_mode((screen_dim, screen_dim))
     clock = pygame.time.Clock()
@@ -28,7 +28,7 @@ async def main(maze_type: int):
     if maze_type == 0:
         maze = AldousBroderMaze(maze_dim, maze_dim)
     elif maze_type == 1:
-        maze = BinaryTreeMaze(maze_dim, maze_dim)
+        maze = BinaryTreeMaze(maze_dim, maze_dim, "S", "E")
     elif maze_type == 2:
         maze = EllerMaze(maze_dim, maze_dim, 0.5, 0.5)
     elif maze_type == 3:
@@ -73,4 +73,4 @@ async def main(maze_type: int):
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(9))
+    loop.run_until_complete(main(2))

@@ -53,8 +53,8 @@ class RecursiveDivisionMaze(Maze):
             for i in range(width):
 
                 if x + i != opening_x:
-                    self.get_cell(x + i, wall_y).walls.append("S")
-                    self.modified.add(self.get_cell(x + i, wall_y))
+                    self.get_cell_2d(x + i, wall_y).walls.append("S")
+                    self.modified.add(self.get_cell_2d(x + i, wall_y))
             height1 = wall_y - y + 1
             if height <= 2:
                 height1 -= 1
@@ -73,8 +73,8 @@ class RecursiveDivisionMaze(Maze):
             opening_y = y + random.randrange(0, height, 1)
             for i in range(height):
                 if y + i != opening_y:
-                    self.get_cell(wall_x, y + i).walls.append("E")
-                    self.modified.add(self.get_cell(wall_x, y + i))
+                    self.get_cell_2d(wall_x, y + i).walls.append("E")
+                    self.modified.add(self.get_cell_2d(wall_x, y + i))
             width1 = wall_x - x + 1
             if width <= 2:
                 width1 -= 1

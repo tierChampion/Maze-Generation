@@ -15,29 +15,23 @@ class Group:
     def __init__(self, elem):
         self.elements = {elem}
         self.id = elem.id
-        self.sub_groups = {self.id}
 
     def cardinality(self):
         return len(self.elements)
 
     def append_element(self, elem):
         self.elements.add(elem)
-        elem.set = self
-        self.sub_groups.add(elem.id)
+        elem.group = self
+
+    def append_elements(self, elems):
+        self.elements.update(elems)
+        for elem in elems:
+            elem.group = self
 
     def merge(self, current_row: set, other_group):
 
-        # Set the id to the oldest group
-        if other_group.id < self.id:
-            self.id = other_group.id
-        else:
-            other_group.id = self.id
-
         # Change the set of the elements
-        for element in other_group.elements:
-            element.set = self
-        self.elements = other_group.elements.union(self.elements)
-        self.sub_groups = other_group.sub_groups.union(self.sub_groups)
+        self.append_elements(other_group.elements)
         current_row.remove(other_group)
 
     def clear(self):
@@ -48,23 +42,10 @@ class GroupElement(Cell):
     def __init__(self, x, y, index):
         super().__init__(x, y)
         self.id = index
-        self.set = None
-
-    def assign_set(self, group):
-        group.append_element(self)
-
-    def get_groups(self):
-        if self.set:
-            return self.set.elements
-        else:
-            return [self]
+        self.group = None
 
     def is_linked(self, elem):
-        return self.set == elem.set
-
-    def link(self, elem):
-        if not elem.is_linked(self):
-            self.set.append_element(elem)
+        return self.group == elem.group
 
 
 class EllerMaze(Maze):
@@ -75,11 +56,11 @@ class EllerMaze(Maze):
 
     def empty_grid(self):
         grid = []
-        set_count = 0
+        group_count = 0
         for y in range(self.height):
             for x in range(self.width):
-                cell = GroupElement(x, y, set_count)
-                set_count += 1
+                cell = GroupElement(x, y, group_count)
+                group_count += 1
                 grid.append(cell)
         return grid
 
@@ -97,21 +78,22 @@ class EllerMaze(Maze):
         for y in range(self.height):
 
             # Init row groups
-            current_sets = set()
+            current_groups = set()
             for x in range(self.width):
-                cell = self.get_cell(x, y)
-                if not cell.set:
-                    cell.assign_set(Group(cell))
-                current_sets.add(cell.set)
+                cell = self.get_cell_2d(x, y)
+                if not cell.group:
+                    new_group = Group(cell)
+                    new_group.append_element(cell)
+                current_groups.add(cell.group)
 
             # Fuse groups
             for x in range(self.width - 1):
-                cell = self.get_cell(x, y)
-                next_cell = self.get_cell(x + 1, y)
+                cell = self.get_cell_2d(x, y)
+                next_cell = self.get_cell_2d(x + 1, y)
                 if not cell.is_linked(next_cell):
                     to_link = random.random() > self.side_factor or y == self.height - 1
                     if to_link:
-                        cell.set.merge(current_sets, next_cell.set)
+                        cell.group.merge(current_groups, next_cell.group)
                         cell.walls.remove("E")
                         next_cell.walls.remove("W")
                         self.modified.add(cell)
@@ -120,10 +102,10 @@ class EllerMaze(Maze):
 
             # Branch downwards at least once per group
             if y < self.height - 1:
-                for group in current_sets:
+                for group in current_groups:
 
                     # Elements in the lower row that where added
-                    extended_set = set()
+                    new_elements = set()
                     elem_list = list(group.elements)
                     has_path_down = False
 
@@ -135,18 +117,18 @@ class EllerMaze(Maze):
                             has_path_down = True
 
                             element = elem_list[i]
-                            lower_element = self.get_cell(element.col, element.row + 1)
+                            lower_element = self.get_cell_2d(element.col, element.row + 1)
 
                             element.walls.remove("S")
                             lower_element.walls.remove("N")
 
                             # Add new element to group
-                            element.link(lower_element)
-                            extended_set.add(lower_element)
+                            element.group.append_element(lower_element)
+                            new_elements.add(lower_element)
                             self.modified.add(element)
                             self.modified.add(lower_element)
                             await asyncio.sleep(delay)
 
                     # Only keep the next row of elements
-                    group.elements.clear()
-                    group.elements.update(extended_set)
+                    group.clear()
+                    group.append_elements(new_elements)
