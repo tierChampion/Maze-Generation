@@ -1,44 +1,17 @@
-from src.maze import Maze, Cell
-import pygame
+from src.maze import Maze
+from src.group import Group, GroupElement
 import random
 import asyncio
-
-vec = pygame.math.Vector2
-
-'''
-Put all possible edges in a set. Every cell starts in a separate tree. Select edges from the set at random and join
-the two trees separated by that edge if they are from different trees. This algorithm gives a result similar to 
-Primm's algorithm, a lot of small paths
-'''
-
-
-class TreeCell(Cell):
-    def __init__(self, x, y, root):
-        super().__init__(x, y)
-        self.root = root
-
-
-class Tree:
-    def __init__(self, cell):
-        self.cells = [cell]
-        self.id = cell.root
-
-    def fusion(self, trees: list, cell: TreeCell):
-        """
-        Merge the cells in the same tree as cell to this tree.
-        :param trees: list of all the trees
-        :param cell: cell of the tree to merge to this tree
-        """
-
-        other_tree = next(tree for tree in trees if tree.id == cell.root)
-        for cell in other_tree.cells:
-            cell.root = self.id
-        self.cells.extend(other_tree.cells)
-        trees.remove(other_tree)
 
 
 class KruskalMaze(Maze):
     def __init__(self, width, height):
+        """
+        Maze that generates itself using Kruskall's algorithm.
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        """
+
         super().__init__(width, height)
         self.directions = ["E", "W", "N", "S"]
         self.dx = [1, -1, 0, 0]
@@ -47,15 +20,20 @@ class KruskalMaze(Maze):
 
     def empty_grid(self):
         grid = []
-        tree = 0
+        group_id = 0
         for y in range(self.height):
             for x in range(self.width):
-                cell = TreeCell(x, y, tree)
-                tree += 1
+                cell = GroupElement(x, y, group_id)
+                group_id += 1
                 grid.append(cell)
         return grid
 
     def get_edges(self):
+        """
+        Get all the edges in the maze.
+        :return: edges
+        """
+
         edges = []
         for cell in self.grid:
             edge1 = [cell.col, cell.row, self.directions.index("E")]
@@ -66,28 +44,42 @@ class KruskalMaze(Maze):
                 edges.append(edge2)
         return edges
 
-    def get_trees(self):
-        trees = []
+    def get_groups(self):
+        """
+        Get all the groups in the maze.
+        :return: groups
+        """
+
+        groups = []
         for cell in self.grid:
-            tree = Tree(cell)
-            trees.append(tree)
-        return trees
+            group = Group(cell)
+            cell.group = group
+            groups.append(group)
+        return groups
 
     async def generate(self, delay):
+        """
+        Generate the maze using Kruskall's algorithm.
+        Place every cell into a group. Randomly select an edge and merge the two groups on
+        either side of the edge if they are different. Repeat this until there are no edges
+        that haven't been checked.
+        :param delay: time to wait for in seconds
+        """
+
         edges = self.get_edges()
-        trees = self.get_trees()
+        groups = self.get_groups()
         random.shuffle(edges)
         while edges:
             selected_edge = edges.pop()
-            cell1 = self.get_cell_2d(selected_edge[0], selected_edge[1])
-            i = selected_edge[2]
-            cell2 = self.get_cell_2d(cell1.col + self.dx[i], cell1.row + self.dy[i])
-            if cell1.root == cell2.root:
+            cell = self.get_cell_2d(selected_edge[0], selected_edge[1])
+            dir_id = selected_edge[2]
+            other_cell = self.get_cell_2d(cell.col + self.dx[dir_id], cell.row + self.dy[dir_id])
+            if cell.group == other_cell.group:
                 continue
-            tree = next(tree for tree in trees if tree.id == cell1.root)
-            tree.fusion(trees, cell2)
-            cell1.walls.remove(self.directions[i])
-            cell2.walls.remove(self.inverses[i])
-            self.modified.add(cell1)
-            self.modified.add(cell2)
+            group = cell.group
+            group.merge(groups, other_cell.group)
+            cell.walls.remove(self.directions[dir_id])
+            other_cell.walls.remove(self.inverses[dir_id])
+            self.modified.add(cell)
+            self.modified.add(other_cell)
             await asyncio.sleep(delay)

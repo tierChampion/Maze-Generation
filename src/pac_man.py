@@ -13,26 +13,6 @@ you simply mirror this maze while removing the inner most wall. In this implemen
 that of the Sidewinder, but on its side, such that you also get a long path along the sides of the maze.
 '''
 
-# TODO Remove as many cells to render as possible with the positive version (render row by row kind of)
-
-
-def negative_draw(win, dimension, cell):
-    top_left = vec((cell.col + 1) * dimension, (cell.row + 1) * dimension)
-    top_right = top_left + vec(dimension, 0)
-    bottom_left = top_left + vec(0, dimension)
-    bottom_right = top_left + vec(dimension, dimension)
-
-    pygame.draw.rect(win, (0, 0, 0), [top_left, vec(dimension, dimension)], 2)
-
-    if "N" in cell.walls:
-        pygame.draw.line(win, (255, 255, 255), top_left, top_right, 1)
-    if "S" in cell.walls:
-        pygame.draw.line(win, (255, 255, 255), bottom_left, bottom_right, 1)
-    if "E" in cell.walls:
-        pygame.draw.line(win, (255, 255, 255), top_right, bottom_right, 1)
-    if "W" in cell.walls:
-        pygame.draw.line(win, (255, 255, 255), top_left, bottom_left, 1)
-
 
 class PacManMaze(Maze):
     def __init__(self, width, height):
@@ -121,23 +101,6 @@ class PacManMaze(Maze):
                 await asyncio.sleep(delay)
 
     async def generate(self, delay):
-        self.looping = False
         await self.carve_hole(delay)
         await self.carve_path(delay)
-        self.looping = True
         await self.loop(delay)
-
-    async def render(self, win: pygame.display, dimension: float, delay: float):
-        white = pygame.color.Color((255, 255, 255))
-        for i in range(self.width * self.height):
-
-            for cell in self.modified:
-                negative_draw(win, dimension, cell)
-
-            self.modified.clear()
-
-            pygame.draw.rect(win, white,
-                             [dimension, dimension, dimension * self.width + 2, dimension * self.height + 2], 2)
-
-            pygame.display.update()
-            await asyncio.sleep(delay)

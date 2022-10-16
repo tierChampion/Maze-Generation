@@ -14,16 +14,30 @@ you pick the newest vertex in C, it is exactly like the Recursive-Backtracker Al
 
 
 def choose_cell(cells: list, method: str):
+    """
+    Select a cell by following a given method.
+    :param cells: collection of all the cells to choose from
+    :param method: method to use for the selection
+    :return: a cell in the list of cells
+    """
+
     if method == "Oldest":
         return cells[0]
     elif method == "Newest":
         return cells[-1]
-    else:
+    elif method == "Random":
         return cells[random.randint(0, len(cells) - 1)]
 
 
 class GrowingTreeMaze(Maze):
-    def __init__(self, width, height, method):
+    def __init__(self, width: int, height: int, method: str):
+        """
+        Maze that generates itself using the Growing Tree algorithm.
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        :param method: selection method for the cells
+        """
+
         super().__init__(width, height)
         self.method = method
         self.directions = ["E", "W", "N", "S"]
@@ -32,6 +46,13 @@ class GrowingTreeMaze(Maze):
         self.inverses = ["W", "E", "S", "N"]
 
     def carve_to_unvisited(self, cell):
+        """
+        If possible, carve a path between the given cell and a new neighbour.
+        :param cell: initial cell to start from
+        :return: neighbour cell that was not seen before
+        """
+
+        # Randomly look at the different neighbours
         data = list(zip(self.directions, self.dx, self.dy, self.inverses))
         random.shuffle(data)
         self.directions, self.dx, self.dy, self.inverses = zip(*data)
@@ -51,6 +72,16 @@ class GrowingTreeMaze(Maze):
         return None
 
     async def generate(self, delay):
+        """
+        Generate a maze with the Growing Tree algorithm.
+        Start with a list with a single random cell inside of it. For every step, choose a cell in the list
+        and carve to one of its neighbour that wasn't visited before. If the cell doesn't have any more
+        neighbours, remove it from the list. Repeat this procedure until the list is empty.
+        Depending on the selection method, will either behave like Primm's algorithm or a
+        Recursive Backtracker algorithm.
+        :param delay: time to wait for in seconds
+        """
+
         C = []
         random_cell = self.get_cell_2d(random.randrange(0, self.width - 1), random.randrange(0, self.height - 1))
         random_cell.visited = True

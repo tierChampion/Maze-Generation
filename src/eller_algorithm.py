@@ -1,55 +1,19 @@
-from src.maze import Maze, Cell
-import pygame
+from src.maze import Maze
+from src.group import GroupElement, Group
 import random
 import asyncio
-
-'''
-Put each cell of the first row in a different set, then randomly join cells next to each other
-if they aren't in the same set. Then randomly create paths downward to the next row, minimum one path per
-set. Put any lone cell in that row in it's own set. Continue for all rows, until you reach the last row and then
-you don't need to add a vertical path. This is one of the fastest algorithms to make mazes. 
-'''
-
-
-class Group:
-    def __init__(self, elem):
-        self.elements = {elem}
-        self.id = elem.id
-
-    def cardinality(self):
-        return len(self.elements)
-
-    def append_element(self, elem):
-        self.elements.add(elem)
-        elem.group = self
-
-    def append_elements(self, elems):
-        self.elements.update(elems)
-        for elem in elems:
-            elem.group = self
-
-    def merge(self, current_row: set, other_group):
-
-        # Change the set of the elements
-        self.append_elements(other_group.elements)
-        current_row.remove(other_group)
-
-    def clear(self):
-        self.elements.clear()
-
-
-class GroupElement(Cell):
-    def __init__(self, x, y, index):
-        super().__init__(x, y)
-        self.id = index
-        self.group = None
-
-    def is_linked(self, elem):
-        return self.group == elem.group
 
 
 class EllerMaze(Maze):
     def __init__(self, width, height, side_factor, down_factor):
+        """
+        Maze that generates itself using Eller's Algorithm.
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        :param side_factor: probability to merge with a lateral neighbour
+        :param down_factor: probability to extend the group downwards
+        """
+
         super().__init__(width, height)
         self.side_factor = side_factor
         self.down_factor = down_factor
@@ -65,13 +29,11 @@ class EllerMaze(Maze):
         return grid
 
     async def generate(self, delay: float):
-
         """
         Generate a maze with Eller's Algorithm.
-        Row by row, make group containing cells. Gradually merge groups and expand them down.
+        Row by row, make group containing cells or elements. Gradually merge groups and expand them down.
         At the end, all groups merge into a single one, which means that every cell is connected
         to every other cell.
-
         :param delay: time in seconds to wait for every step
         """
 
@@ -86,7 +48,7 @@ class EllerMaze(Maze):
                     new_group.append_element(cell)
                 current_groups.add(cell.group)
 
-            # Fuse groups
+            # Fuse groups laterally
             for x in range(self.width - 1):
                 cell = self.get_cell_2d(x, y)
                 next_cell = self.get_cell_2d(x + 1, y)

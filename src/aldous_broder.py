@@ -1,23 +1,14 @@
 from src.maze import Maze
-import pygame
 import random
 import asyncio
-
-vec = pygame.math.Vector2
-
-'''
-Generates a minimum spanning tree maze. Starts at a random vertex and goes to a random neighbour,
-which becomes the current vertex. It is very slow as a maze generation algorithm.
-'''
 
 
 class AldousBroderMaze(Maze):
     def __init__(self, width: int, height: int):
         """
         Maze that generates itself using the Aldous-Broder Algorithm
-
-        :param width: Width in cells of the maze
-        :param height: Height in cells of the maze
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
         """
 
         super().__init__(width, height)
@@ -29,10 +20,9 @@ class AldousBroderMaze(Maze):
     def choose_neighbour(self, x: int, y: int):
         """
         Find a random valid neighbour of the current cell.
-
-        :param x: Lateral position of the current cell
-        :param y: Vertical position of the current cell
-        :return: Position of the neighbour and the move to get to it.
+        :param x: lateral position of the current cell
+        :param y: vertical position of the current cell
+        :return: position of the neighbour and the move to get to it.
         """
 
         # Shuffle the different move possibilities
@@ -54,9 +44,7 @@ class AldousBroderMaze(Maze):
         Choose a starting cell and gradually go to it's neighbouring cells, carving a path if the cell wasn't visited.
         The algorithm wastes a lot of time not carving paths but it generates minimum spanning trees and has an
         equal probability to generate any maze.
-
         :param delay: time in seconds to wait for every step.
-
         """
 
         # Pick the starting cell

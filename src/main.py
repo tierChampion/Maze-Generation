@@ -19,8 +19,8 @@ from src.sidewinder import SideWinderMaze
 
 async def main(maze_type: int):
 
-    screen_dim = 800
-    maze_dim = 80
+    screen_dim = 720
+    maze_dim = 50
 
     window = pygame.display.set_mode((screen_dim, screen_dim))
     clock = pygame.time.Clock()
@@ -54,7 +54,7 @@ async def main(maze_type: int):
 
     cell_dim = screen_dim / (maze_dim + 2)
 
-    maze.init_render(window, cell_dim)
+    maze.full_render(window, cell_dim)
 
     while running:
         clock.tick(1)
@@ -65,12 +65,12 @@ async def main(maze_type: int):
         if not finished:
             await asyncio.gather(
                 maze.generate(delay),
-                maze.render(window, cell_dim, delay)
+                maze.partial_render(window, cell_dim, delay)
             )
-            maze.init_render(window, cell_dim)
+            maze.full_render(window, cell_dim)
         finished = True
     pygame.quit()
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(2))
+    loop.run_until_complete(main(5))

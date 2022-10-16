@@ -88,7 +88,7 @@ class RecursiveDivisionMaze(Maze):
     async def generate(self, delay):
         await self.recursive_subdivide(0, 0, self.width, self.height, delay)
 
-    async def render(self, win: pygame.display, dimension: float, delay: float):
+    async def partial_render(self, win: pygame.display, dimension: float, delay: float):
         white = pygame.color.Color((255, 255, 255))
         for i in range(self.width * self.height):
             for cell in self.grid:

@@ -14,6 +14,12 @@ it to the set V. This algorithm generates a minimum spanning tree and tends to c
 
 class PrimmMaze(Maze):
     def __init__(self, width, height):
+        """
+        Maze that generates itself using Primm's algorithm.
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        """
+
         super().__init__(width, height)
         self.directions = ["E", "W", "N", "S"]
         self.dx = [1, -1, 0, 0]
@@ -40,6 +46,14 @@ class PrimmMaze(Maze):
         return None
 
     async def generate(self, delay):
+        """
+        Generate a maze with Primm's algorithm.
+        Start with a list with a single random cell inside of it. For every step, choose random cell in the list
+        and carve to one of its neighbour that wasn't visited before. If the cell doesn't have any more
+        neighbours, remove it from the list. Repeat this procedure until the list is empty.
+        :param: delay: time to wait for in seconds
+        """
+
         V = []
         random_cell = self.get_cell_2d(random.randrange(0, self.width - 1), random.randrange(0, self.height - 1))
         random_cell.visited = True
