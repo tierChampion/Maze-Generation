@@ -16,6 +16,13 @@ that of the Sidewinder, but on its side, such that you also get a long path alon
 
 class PacManMaze(Maze):
     def __init__(self, width, height):
+        """
+        Maze that generates itself to function like a Pac-man maze.
+
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        """
+
         super().__init__(width, height)
         self.half_width = self.width // 2
         self.directions = ["E", "W", "N", "S"]
@@ -26,6 +33,14 @@ class PacManMaze(Maze):
         self.looping = False
 
     def modify_cell(self, x, y, direction):
+        """
+        Changes both a cell and its mirrored cell.
+
+        :param x: horizontal position of the real cell
+        :param y: vertical position of the real cell
+        :param direction: wall to carve on the real cell
+        """
+
         cell = self.get_cell_2d(x, y)
         mirror_x = self.width - x - 1
         mirror_cell = self.get_cell_2d(mirror_x, y)
@@ -36,6 +51,12 @@ class PacManMaze(Maze):
         self.modified.add(mirror_cell)
 
     async def carve_hole(self, delay):
+        """
+        Create a 6x4 hole in the middle of the maze to host the ghosts.
+
+        :param delay: time is seconds to wait for every step
+        """
+
         y_min = self.height // 2
         y_max = self.height // 2 + 3
         x_min = self.half_width - 3
@@ -54,6 +75,13 @@ class PacManMaze(Maze):
                 await asyncio.sleep(delay)
 
     async def carve_path(self, delay):
+        """
+        Carve the paths in the maze using the Sidewinder algorithm.
+
+        :param delay:
+        :return:
+        """
+
         for x in range(self.half_width):
             run = []
             for y in range(self.height):
@@ -80,12 +108,19 @@ class PacManMaze(Maze):
                 await asyncio.sleep(delay)
 
     async def loop(self, delay):
+        """
+        Remove all the dead-ends and the central wall of the maze.
+
+        :param delay: time to wait for in seconds
+        """
+
         for y in range(self.height):
             for x in range(self.half_width):
                 cell = self.get_cell_2d(x, y)
                 if x == self.half_width - 1 and not cell.visited:
                     self.modify_cell(x, y, "E")
                 else:
+                    # Having more than two walls means either un-carved or an end.
                     while len(cell.walls) > 2:
                         next_x = -1
                         next_y = -1
@@ -101,6 +136,16 @@ class PacManMaze(Maze):
                 await asyncio.sleep(delay)
 
     async def generate(self, delay):
+        """
+        Generate a Pac-man maze.
+        First carve the central hole for the ghosts.
+        Second, carve the path with the sidewinder algorithm.
+        Lastly, remove all dead-ends as well as the central wall that gets created.
+        All the process is mirrored on each halves of the maze to have symmetry.
+
+        :param delay: time in seconds to wait for every step
+        """
+
         await self.carve_hole(delay)
         await self.carve_path(delay)
         await self.loop(delay)

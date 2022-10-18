@@ -5,6 +5,7 @@ class GroupElement(Cell):
     def __init__(self, x, y, key):
         """
         Both a Cell in a maze and an element in a group.
+
         :param x: horizontal position in the maze
         :param y: vertical position in the maze
         :param key: unique key to identify the element
@@ -19,6 +20,7 @@ class GroupElement(Cell):
     def is_linked(self, other_cell):
         """
         Determines if two cells are linked together.
+
         :param other_cell: neighbour cell to test linking with
         :return: whether the cells can be reached
         """
@@ -30,6 +32,7 @@ class Group:
     def __init__(self, elem):
         """
         Collection of elements.
+
         :param elem: initial element in the group
         """
 
@@ -47,6 +50,7 @@ class Group:
     def append_element(self, elem):
         """
         Add an element to the group.
+
         :param elem: element to add
         """
 
@@ -56,6 +60,7 @@ class Group:
     def append_elements(self, elems: set):
         """
         Add a set of elements to the group
+
         :param elems: collection of elements to add
         """
 
@@ -65,6 +70,7 @@ class Group:
     def merge(self, current_row: set, other_group):
         """
         Merge two groups together.
+
         :param current_row:
         :param other_group:
         """

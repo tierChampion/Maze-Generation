@@ -1,21 +1,13 @@
 from src.maze import Maze
-import pygame
 import random
 import asyncio
-
-vec = pygame.math.Vector2
-
-'''
-Start with a set V with a random vertex inside. Choose a random vertex in V and randomly
-select one of it's neighbours that isn't part of V. Mark that neighbour as visited and add
-it to the set V. This algorithm generates a minimum spanning tree and tends to create small paths
-'''
 
 
 class PrimmMaze(Maze):
     def __init__(self, width, height):
         """
         Maze that generates itself using Primm's algorithm.
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         """
@@ -48,9 +40,10 @@ class PrimmMaze(Maze):
     async def generate(self, delay):
         """
         Generate a maze with Primm's algorithm.
-        Start with a list with a single random cell inside of it. For every step, choose random cell in the list
+        Start with a list with a single random cell inside it. For every step, choose random cell in the list
         and carve to one of its neighbour that wasn't visited before. If the cell doesn't have any more
         neighbours, remove it from the list. Repeat this procedure until the list is empty.
+
         :param: delay: time to wait for in seconds
         """
 

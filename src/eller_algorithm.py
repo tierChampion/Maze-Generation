@@ -8,6 +8,7 @@ class EllerMaze(Maze):
     def __init__(self, width, height, side_factor, down_factor):
         """
         Maze that generates itself using Eller's Algorithm.
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         :param side_factor: probability to merge with a lateral neighbour
@@ -15,8 +16,8 @@ class EllerMaze(Maze):
         """
 
         super().__init__(width, height)
-        self.side_factor = side_factor
-        self.down_factor = down_factor
+        self.side_factor = min(max(side_factor, 0), 1)
+        self.down_factor = min(max(down_factor, 0), 1)
 
     def empty_grid(self):
         grid = []
@@ -34,6 +35,7 @@ class EllerMaze(Maze):
         Row by row, make group containing cells or elements. Gradually merge groups and expand them down.
         At the end, all groups merge into a single one, which means that every cell is connected
         to every other cell.
+
         :param delay: time in seconds to wait for every step
         """
 

@@ -5,7 +5,7 @@ import pygame
 from src.aldous_broder import AldousBroderMaze
 from src.binary_tree import BinaryTreeMaze
 from src.eller_algorithm import EllerMaze
-from src.growing_tree import GrowingTreeMaze
+from src.growing_tree import GrowingBehaviour, GrowingTreeMaze
 from src.hunt_and_kill import HuntAndKillMaze
 from src.kruskal_algorithm import KruskalMaze
 from src.pac_man import PacManMaze
@@ -14,13 +14,11 @@ from src.recursive_backtrakcker import RecursiveBackTrackerMaze
 from src.recursive_division import RecursiveDivisionMaze
 from src.sidewinder import SideWinderMaze
 
-# parameter check for mazes initialisation (once that requires string especially)
-
 
 async def main(maze_type: int):
 
     screen_dim = 720
-    maze_dim = 50
+    maze_dim = 80
 
     window = pygame.display.set_mode((screen_dim, screen_dim))
     clock = pygame.time.Clock()
@@ -28,11 +26,11 @@ async def main(maze_type: int):
     if maze_type == 0:
         maze = AldousBroderMaze(maze_dim, maze_dim)
     elif maze_type == 1:
-        maze = BinaryTreeMaze(maze_dim, maze_dim, "S", "E")
+        maze = BinaryTreeMaze(maze_dim, maze_dim, ("W", "N"))
     elif maze_type == 2:
         maze = EllerMaze(maze_dim, maze_dim, 0.5, 0.5)
     elif maze_type == 3:
-        maze = GrowingTreeMaze(maze_dim, maze_dim, "Random")
+        maze = GrowingTreeMaze(maze_dim, maze_dim, GrowingBehaviour.RANDOM)
     elif maze_type == 4:
         maze = HuntAndKillMaze(maze_dim, maze_dim)
     elif maze_type == 5:
@@ -46,7 +44,7 @@ async def main(maze_type: int):
     elif maze_type == 9:
         maze = RecursiveDivisionMaze(maze_dim, maze_dim)
     else:
-        maze = SideWinderMaze(maze_dim, maze_dim, "E")
+        maze = SideWinderMaze(maze_dim, maze_dim, "W")
 
     finished = False
     running = True
@@ -61,7 +59,6 @@ async def main(maze_type: int):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                pygame.quit()
         if not finished:
             await asyncio.gather(
                 maze.generate(delay),
@@ -73,4 +70,4 @@ async def main(maze_type: int):
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(5))
+    loop.run_until_complete(main(1))

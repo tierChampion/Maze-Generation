@@ -1,3 +1,5 @@
+import math
+
 from src.maze import Cell, Maze
 import pygame
 import random
@@ -5,23 +7,29 @@ import asyncio
 
 vec = pygame.math.Vector2
 
-'''
-Unlike the other algorithms, int his algorithm you create the walls instead of carving a path.
-You first if you want an horizontal or vertical wall. You then randomly determine where it will go,
-as well as where the single hole in the wall will go. Recursively do this operation with the two knew halves
-created by cutting the initial rectangle with the wall. When the height or width of that rectangle is equal
-or smaller then one, you stop. This algorithm creates very square looking maze with a lot of small paths.
-'''
-
 
 class DivisionCell(Cell):
     def __init__(self, x, y):
+        """
+        Cell in a maze. Starts with no walls.
+
+        :param x:
+        :param y:
+        """
+
         super().__init__(x, y)
         self.walls = []
 
 
 class RecursiveDivisionMaze(Maze):
     def __init__(self, width, height):
+        """
+        Maze that generates itself using the Recursive Division algorithm.
+
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        """
+
         super().__init__(width, height)
 
     def empty_grid(self):
@@ -34,12 +42,21 @@ class RecursiveDivisionMaze(Maze):
 
     @staticmethod
     def choose_orientation(width, height):
+        """
+        Determine whether to create a horizontal or vertical wall.
+
+        :param width: width of the current section
+        :param height: height of the current section
+        :return: true to create a horizontal wall and false for a vertical wall
+        """
+
         horizontal = (width < height)
         if width == height:
             horizontal = random.randint(0, 1) == 0
         return horizontal
 
     async def recursive_subdivide(self, x, y, width, height, delay):
+
         if width <= 1 or height <= 1:
             return
         horizontal = self.choose_orientation(width, height)
@@ -86,11 +103,21 @@ class RecursiveDivisionMaze(Maze):
             await self.recursive_subdivide(x2, y, width2, height, delay)
 
     async def generate(self, delay):
+        """
+        Generate a maze using the Recursive Subdivision algorithm.
+        Start with the whole maze empty and add a wall spanning the whole width or height of the maze
+        except one hole. Repeat this procedure recursively for each of the halves created.
+
+        :param delay: time in seconds to wait for every step
+        """
+
         await self.recursive_subdivide(0, 0, self.width, self.height, delay)
 
     async def partial_render(self, win: pygame.display, dimension: float, delay: float):
         white = pygame.color.Color((255, 255, 255))
-        for i in range(self.width * self.height):
+
+        # Approximation of how many renders will be necessary
+        for i in range(math.ceil(0.423 * self.width * self.height)):
             for cell in self.grid:
                 top_left = vec((cell.col + 1) * dimension, (cell.row + 1) * dimension)
                 top_right = top_left + vec(dimension, 0)

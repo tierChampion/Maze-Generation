@@ -5,19 +5,25 @@ import asyncio
 
 vec = pygame.math.Vector2
 
-'''
-Iterates throw all the nodes in the graph, adds them to the run set and randomly chooses one of two options:
-1- Carve a path either east or west, if possible
-2- Choose a random node in the run and carve a path north. Empty run. 
-Much like the Binary Tree algorithm, this algorithm has a long path, but this time only on the north wall.
-However, the Side-Winder generated mazes don't have a strong diagonal bias.
-'''
-
 
 class SideWinderMaze(Maze):
     def __init__(self, width, height, lateral_dir):
+        """
+        Maze that generates itself using the Sidewinder algorithm.
+
+        :param width: width in cells of the maze
+        :param height: height in cells of the maze
+        :param lateral_dir: direction to carve sideways
+        """
+
         super().__init__(width, height)
         directions = ["E", "W"]
+
+        if lateral_dir not in directions:
+            print("\n\033[31mERROR: The lateral direction for the Sidewinder is wrong. "
+                  "It was set to east.\n")
+            lateral_dir = "E"
+
         lateral_id = directions.index(lateral_dir)
         self.dir = lateral_dir
         directions.remove(lateral_dir)
@@ -26,12 +32,23 @@ class SideWinderMaze(Maze):
         self.dx = deltas[lateral_id]
 
     async def generate(self, delay):
+        """
+        Generate a maze with the Sidewinder algorithm.
+        Row by row, decide to carve sideways or downward. If the decision is to carve sideways,
+        add the carved cell to a list and if the decision is to carve downwards, choose a random cell in the list,
+        carve a path downward from that cell and clear the list.
+
+        :param delay: time in seconds to wait for every step
+        """
+
         for y in range(self.height):
             run = []
             for x in range(self.width):
                 row_pos = self.width - x - 1 if self.dir == "W" else x
                 cell = self.get_cell_2d(row_pos, y)
                 run.append(cell)
+
+                # Deal with the specific edge cases that limit possibilities
                 if y == 0 and (row_pos == self.width - 1 and self.dir == "E" or
                                row_pos == 0 and self.dir == "W"):
                     continue
@@ -42,6 +59,8 @@ class SideWinderMaze(Maze):
                     move = 0
                 else:
                     move = random.randint(0, 1)
+
+                # Move either sideways or down
                 if move == 1:
                     cell.walls.remove(self.dir)
                     side_cell = self.get_cell_2d(row_pos + self.dx, y)

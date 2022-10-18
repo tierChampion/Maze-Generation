@@ -7,6 +7,7 @@ class AldousBroderMaze(Maze):
     def __init__(self, width: int, height: int):
         """
         Maze that generates itself using the Aldous-Broder Algorithm
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         """
@@ -20,6 +21,7 @@ class AldousBroderMaze(Maze):
     def choose_neighbour(self, x: int, y: int):
         """
         Find a random valid neighbour of the current cell.
+
         :param x: lateral position of the current cell
         :param y: vertical position of the current cell
         :return: position of the neighbour and the move to get to it.
@@ -42,8 +44,9 @@ class AldousBroderMaze(Maze):
         """
         Generate a maze with the Aldous-Broder Algorithm.
         Choose a starting cell and gradually go to it's neighbouring cells, carving a path if the cell wasn't visited.
-        The algorithm wastes a lot of time not carving paths but it generates minimum spanning trees and has an
+        The algorithm wastes a lot of time not carving paths, but it generates minimum spanning trees and has an
         equal probability to generate any maze.
+
         :param delay: time in seconds to wait for every step.
         """
 

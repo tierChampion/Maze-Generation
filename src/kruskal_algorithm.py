@@ -8,6 +8,7 @@ class KruskalMaze(Maze):
     def __init__(self, width, height):
         """
         Maze that generates itself using Kruskall's algorithm.
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         """
@@ -31,6 +32,7 @@ class KruskalMaze(Maze):
     def get_edges(self):
         """
         Get all the edges in the maze.
+
         :return: edges
         """
 
@@ -47,6 +49,7 @@ class KruskalMaze(Maze):
     def get_groups(self):
         """
         Get all the groups in the maze.
+
         :return: groups
         """
 
@@ -63,6 +66,7 @@ class KruskalMaze(Maze):
         Place every cell into a group. Randomly select an edge and merge the two groups on
         either side of the edge if they are different. Repeat this until there are no edges
         that haven't been checked.
+
         :param delay: time to wait for in seconds
         """
 

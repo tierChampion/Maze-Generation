@@ -1,22 +1,13 @@
 from src.maze import Maze
-import pygame
 import random
 import asyncio
-
-vec = pygame.math.Vector2
-
-'''
-Start at a preselected node and go into the 'walk' behaviour, where you perform a random walk, carving a path along 
-the way. When it is impossible to find an available neighbour, go into the 'hunt' behaviour, where you iterate through 
-the graph to find an available node from where to start over. Similarly to the Recursive-Backtracker, this algorithm 
-creates very long paths.
-'''
 
 
 class HuntAndKillMaze(Maze):
     def __init__(self, width, height):
         """
         Maze that generates itself using the Hunt and Kill algorithm.
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         """
@@ -30,6 +21,7 @@ class HuntAndKillMaze(Maze):
     async def walk(self, x, y, delay):
         """
         Carve a path with a random walk.
+
         :param x: lateral position to start from
         :param y: vertical position to start from
         :param delay: time in seconds to wait every frame
@@ -62,6 +54,7 @@ class HuntAndKillMaze(Maze):
     async def hunt(self):
         """
         Select a new random starting point.
+
         :return: new position
         """
 
@@ -83,6 +76,7 @@ class HuntAndKillMaze(Maze):
         Start at a random point in the maze and random walk until stuck in a
         dead-end. Repeat with new starting points making sure to connect them to a nearby walk
         if possible until no paths are possible.
+
         :param delay: time to wait for in seconds
         """
 

@@ -8,6 +8,7 @@ class Cell:
     def __init__(self, x, y):
         """
         Single square in the maze.
+
         :param x: horizontal position in the maze
         :param y: vertical position in the maze
         """
@@ -45,6 +46,7 @@ class Maze:
     def get_cell_2d(self, x, y):
         """
         Get the cell at position (x, y) in the maze.
+
         :param x: lateral position of the desired cell
         :param y: vertical position of the desired cell
         :return: cell at (x, y)
@@ -55,6 +57,7 @@ class Maze:
     def get_cell_1d(self, p):
         """
         Get the cell at linear position (p) in the maze
+
         :param p: linear position in the maze
         :return: cell at (p)
         """
@@ -64,6 +67,7 @@ class Maze:
     def full_render(self, win: pygame.display, dimension: float):
         """
         Render the complete maze.
+
         :param win: display to render on
         :param dimension: side length of a cell
         """
@@ -94,6 +98,7 @@ class Maze:
     async def partial_render(self, win: pygame.display, dimension: float, delay: float):
         """
         Re-render only the modified cells in the maze.
+
         :param win: display to render on
         :param dimension: side length of a cell
         :param delay: time to wait for every step

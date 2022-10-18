@@ -1,19 +1,16 @@
 from src.maze import Maze
-import pygame
+from enum import Enum
 import random
 import asyncio
 
-vec = pygame.math.Vector2
 
-'''
-Start with a set C, in which you put a random vertex. You then select a vertex in C, carve a path between it and an 
-available neighbour. If there isn't an available neighbour, remove the vertex from C. Depending on the method of 
-selection, The maze generation behaves differently. Randomly, it is exactly like Primm's Algorithm and if 
-you pick the newest vertex in C, it is exactly like the Recursive-Backtracker Algorithm.
-'''
+class GrowingBehaviour(Enum):
+    RANDOM = 0
+    OLDEST = 1
+    NEWEST = 2
 
 
-def choose_cell(cells: list, method: str):
+def choose_cell(cells: list, method: GrowingBehaviour):
     """
     Select a cell by following a given method.
     :param cells: collection of all the cells to choose from
@@ -21,18 +18,19 @@ def choose_cell(cells: list, method: str):
     :return: a cell in the list of cells
     """
 
-    if method == "Oldest":
+    if method == GrowingBehaviour.OLDEST:
         return cells[0]
-    elif method == "Newest":
+    elif method == GrowingBehaviour.NEWEST:
         return cells[-1]
-    elif method == "Random":
+    elif method == GrowingBehaviour.RANDOM:
         return cells[random.randint(0, len(cells) - 1)]
 
 
 class GrowingTreeMaze(Maze):
-    def __init__(self, width: int, height: int, method: str):
+    def __init__(self, width: int, height: int, method: GrowingBehaviour):
         """
         Maze that generates itself using the Growing Tree algorithm.
+
         :param width: width in cells of the maze
         :param height: height in cells of the maze
         :param method: selection method for the cells
@@ -48,6 +46,7 @@ class GrowingTreeMaze(Maze):
     def carve_to_unvisited(self, cell):
         """
         If possible, carve a path between the given cell and a new neighbour.
+
         :param cell: initial cell to start from
         :return: neighbour cell that was not seen before
         """
@@ -79,6 +78,7 @@ class GrowingTreeMaze(Maze):
         neighbours, remove it from the list. Repeat this procedure until the list is empty.
         Depending on the selection method, will either behave like Primm's algorithm or a
         Recursive Backtracker algorithm.
+
         :param delay: time to wait for in seconds
         """
 
